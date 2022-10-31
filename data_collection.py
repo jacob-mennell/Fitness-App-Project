@@ -42,17 +42,17 @@ days_list = [yesterday2, yesterday3, yesterday4, yesterday5, yesterday6, yesterd
 for day in days_list:
     activities = fitbit.activities(date=day)['activities']
 
-    id_list_new = [action['activityId'] for action in activities]
-    name_list_new = [action['name'] for action in activities]
-    calories_list_new = [action['calories'] for action in activities]
-    steps_list_new = [action['steps'] for action in activities]
-    date_list_new = [action['startDate'] for action in activities]
+    # id_list_new = [action['activityId'] for action in activities]
+    # name_list_new = [action['name'] for action in activities]
+    # calories_list_new = [action['calories'] for action in activities]
+    # steps_list_new = [action['steps'] for action in activities]
+    # date_list_new = [action['startDate'] for action in activities]
 
-    [id_list.append(x) for x in id_list_new]
-    [name_list.append(x) for x in name_list_new]
-    [calories_list.append(x) for x in calories_list_new]
-    [steps_list.append(x) for x in steps_list_new]
-    [date_list.append(x) for x in date_list_new]
+    [id_list.append(x) for x in [action['activityId'] for action in activities]]
+    [name_list.append(x) for x in [action['name'] for action in activities]]
+    [calories_list.append(x) for x in [action['calories'] for action in activities]]
+    [steps_list.append(x) for x in [action['steps'] for action in activities]]
+    [date_list.append(x) for x in [action['startDate'] for action in activities]]
 
 # make DataFrame
 activity_df = pd.DataFrame({'id': id_list,
