@@ -12,6 +12,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SHEET_ID = os.getenv('SHEET_ID')
 SHEET_RANGE = 'A1:F14'
 
+
 def sheet_load():
     '''
     '''
@@ -42,5 +43,6 @@ def sheet_load():
         print('No data found.')
 
     return pd.DataFrame(values_input[1:], columns=values_input[0])
+
 
 df = sheet_load()
