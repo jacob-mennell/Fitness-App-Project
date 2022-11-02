@@ -12,7 +12,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SHEET_ID = os.getenv('SHEET_ID')
 SHEET_RANGE = 'A1:F14'
 
-def main():
+def sheet_load():
     '''
     '''
     global values_input, service
@@ -43,6 +43,4 @@ def main():
 
     return pd.DataFrame(values_input[1:], columns=values_input[0])
 
-main()
-
-df = main()
+df = sheet_load()
