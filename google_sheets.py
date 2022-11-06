@@ -1,25 +1,26 @@
 import pandas as pd
 import os
-import os
-import pickl
+# import pickl
 # used to access google drive
 import gspread as gs
 
-sheet_url = os.getenv('sheet_url')
 
-# authenticate
-gc = gs.service_account(filename='service_account.json')
+def get_gogole_sheet(sheet_url, sheet_name):
+    #sheet_url = os.getenv('sheet_url')
 
-# open from url
-sh = gc.open_by_url(sheet_url)
+    # authenticate
+    gc = gs.service_account(filename='service_account.json')
 
-# select workbook
-lifts = sh.worksheet('Lifts')
-pb = sh.worksheet('PB')
+    # open from url
+    sh = gc.open_by_url(sheet_url)
 
-# create Data Frame
-lifts_df = pd.DataFrame(lifts.get_all_records())
-pb_df = pd.DataFrame(pb.get_all_records())
+    # select workbook
+    sheet = sh.worksheet(sheet_name)
+
+    # create Data Frame
+    df = pd.DataFrame(sheet.get_all_records())
+
+    return df
 
 # using sheet api waiting for approved scope
 # from googleapiclient.discovery import build
