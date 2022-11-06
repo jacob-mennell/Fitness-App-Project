@@ -5,7 +5,7 @@ import os
 import gspread as gs
 
 
-def get_gogole_sheet(sheet_url, sheet_name):
+def get_google_sheet(sheet_url, sheet_name):
     #sheet_url = os.getenv('sheet_url')
 
     # authenticate

@@ -2,19 +2,18 @@ import numpy as np
 import altair as alt
 import pandas as pd
 import streamlit as st
+import os
 from google_sheets import get_google_sheet
 
-''' test web app prior to loading fitness data'''
-
-st.header('st.write')
+st.header('test web app prior to loading fitness data')
 
 # Example 1
 
-st.write('Hello, *World!* :sunglasses:')
+st.write('Personal Fitness Data Application')
 
 # Example 2
 
-st.write(1234)
+st.write('Gym History Table')
 
 # Example 3
 
@@ -25,9 +24,13 @@ st.write(1234)
 
 # make df from google sheets data
 sheet_url = os.getenv('sheet_url')
-df = get_google_sheet(sheet_url, 'Lifts')
+df = get_google_sheet(sheet_url, 'PB')
+df = df.astype(str)
+# test read in correctly
+print(df.shape)
 
-st.write(df)
+# st.write(df)
+st.dataframe(df)
 
 # Example 4
 
@@ -40,4 +43,5 @@ df2 = pd.DataFrame(
      columns=['a', 'b', 'c'])
 c = alt.Chart(df2).mark_circle().encode(
      x='a', y='b', size='c', color='c', tooltip=['a', 'b', 'c'])
+
 st.write(c)
