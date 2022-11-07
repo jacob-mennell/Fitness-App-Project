@@ -4,6 +4,7 @@ import cherrypy
 import fitbit
 from gather_keys_oauth2 import OAuth2Server
 import os
+import json
 
 
 def get_x_days_activity(no_days_ago: int, client_id: str, client_secret: str) -> pd.DataFrame:
@@ -48,3 +49,13 @@ def get_x_days_activity(no_days_ago: int, client_id: str, client_secret: str) ->
     # return DataFrame
     return activity_df
 
+
+# get credentials for api and google sheet source
+with open('cred.json') as data_file:
+    data = json.load(data_file)
+client_id = data['client_id']
+client_secret = data['client_secret']
+
+# export fitbit data to pkl file
+activity = get_x_days_activity(15, client_id, client_secret)
+activity.to_pickle('activity.pkl')

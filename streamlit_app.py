@@ -7,8 +7,19 @@ from google_sheets import get_google_sheet
 import cherrypy
 import fitbit as fitbit
 from gather_keys_oauth2 import OAuth2Server
-from data_collection import get_x_days_activity
+#from data_collection import get_x_days_activity
 import json
+import cherrypy
+import os
+import sys
+import threading
+import traceback
+import webbrowser
+from urllib.parse import urlparse
+from base64 import b64encode
+from fitbit.api import Fitbit
+from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
+
 
 # get credentials for api and google sheet source
 with open('cred.json') as data_file:
@@ -28,6 +39,10 @@ df = df.astype(str)
 st.dataframe(df)
 
 # fitbit data
-activity = get_x_days_activity(10, client_id, client_secret)
-activity = activity.astype(str)
-st.dataframe(activity)
+st.write('Gym Activity Table')
+# fitbit data
+#activity = get_x_days_activity(1, client_id, client_secret)
+#activity.to_pickle('activity.pkl')
+
+activity_df = pd.read_pickle('activity.pkl')
+st.write(activity_df)
