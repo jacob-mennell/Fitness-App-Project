@@ -5,7 +5,7 @@ import os
 import gspread as gs
 
 
-def get_google_sheet(sheet_url, sheet_name) -> pd.DataFrame:
+def get_google_sheet(sheet_url: str, sheet_name: str) -> pd.DataFrame:
     #sheet_url = os.getenv('sheet_url')
 
     # authenticate
