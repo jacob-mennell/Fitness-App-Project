@@ -20,6 +20,9 @@ def get_google_sheet(sheet_url: str, sheet_name: str) -> pd.DataFrame:
     # create Data Frame
     df = pd.DataFrame(sheet.get_all_records())
 
+    # enforce case
+    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+
     return df
 
 # using sheet api waiting for approved scope

@@ -28,6 +28,16 @@ df = get_google_sheet(sheet_url, 'Lifts')
 df = df.astype(str)
 st.dataframe(df)
 
+# add filter for exercise
+Exercises = df['Exercise'].drop_duplicates()
+make_choice = st.sidebar.selectbox('Select your Exercise:', Exercises)
+df_filt = df.loc[df["Exercise"] == make_choice]
+
+# create and write graph
+c = alt.Chart(df_filt).mark_circle().encode(
+     x='Day', y='Weight', size='Reps')
+st.write(c)
+
 # fitbit data
 st.write('Gym Activity Table')
 # fitbit data
