@@ -7,7 +7,7 @@ from google_sheets import get_google_sheet
 import cherrypy
 import fitbit as fitbit
 from gather_keys_oauth2 import OAuth2Server
-#from data_collection import get_x_days_activity
+# from data_collection import get_x_days_activity
 import json
 
 
