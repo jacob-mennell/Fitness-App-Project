@@ -25,6 +25,7 @@ st.write('Gym History Table')
 
 # historical lifts from google sheets
 lifts_df = get_google_sheet(sheet_url, 'Lifts')
+pb_df = get_google_sheet(sheet_url, 'PB')
 
 # minor cleaning
 # lifts_df = lifts_df.astype(str)
@@ -41,12 +42,18 @@ make_choice = st.sidebar.selectbox('Select your Gym Exercise:', Exercises)
 lifts_filt_df = lifts_df.loc[lifts_df["Exercise"] == make_choice]
 
 # create and write graph
-c = alt.Chart(lifts_filt_df).mark_line().encode(
-     x='Day', y='Weight', color='Reps').properties(width=600, height=300)
+c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).encode(
+     x='Day', y='Weight', color='Reps').properties(width=600, height=300).configure_point(
+    size=150)
 st.write(c)
 
 # show base data
+st.write('Gym Base Data')
 st.dataframe(lifts_filt_df)
+
+# fixed one rep max table
+st.write('PB Table')
+st.dataframe(pb_df)
 
 # fitbit data
 st.write('General Activity Table')
@@ -56,8 +63,11 @@ st.write('General Activity Table')
 
 # add filter for activity
 activity_df = pd.read_pickle('activity.pkl')
-activity_list = activity_df['Name'].drop_duplicates()
+activity_df['Start Date'] = pd.to_datetime(activity_df['Start Date'], format='%Y-%m-%d')
+activity_list = activity_df['Name'].drop_duplicates().to_list()
 activity_choice = st.sidebar.selectbox('Select your Activity', activity_list)
+st.write('You selected:', activity_choice)
+
 activity_filt_df = activity_df.loc[activity_df["Name"] == activity_choice]
 
 # create and write graph
@@ -71,4 +81,5 @@ c = alt.Chart(activity_filt_df).mark_bar().encode(
      x='Start Date', y='Steps').properties(width=600, height=300)
 st.write(c)
 
+st.write('Activity Base Data')
 st.write(activity_filt_df)
