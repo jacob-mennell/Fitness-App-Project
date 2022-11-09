@@ -9,6 +9,7 @@ import fitbit as fitbit
 from gather_keys_oauth2 import OAuth2Server
 # from data_collection import get_x_days_activity
 import json
+import plotly.express as px
 
 
 # get credentials for api and google sheet source
@@ -53,6 +54,9 @@ st.dataframe(lifts_filt_df)
 
 # fixed one rep max table
 st.write('PB Table')
+pb_df['Reps'] = pb_df['Reps'].astype(str)
+fig = px.bar(pb_df, x="Exercise", y="Weight", color="Reps", barmode="group")
+st.write(fig)
 st.dataframe(pb_df)
 
 # fitbit data
@@ -65,24 +69,26 @@ st.subheader('General Activity Data')
 # add filter for activity
 activity_df = pd.read_pickle('activity.pkl')
 activity_list = activity_df['Name'].drop_duplicates().to_list()
-activity_choice = st.sidebar.selectbox('Select your Activity', activity_list)
+activity_choice = st.sidebar.multiselect('Select your Activity', activity_list)
 st.write('You selected:', activity_choice)
-activity_filt_df = activity_df.loc[activity_df["Name"] == activity_choice]
+
+if not activity_choice:
+    activity_filt_df = activity_df.copy()
+else:
+    activity_filt_df = activity_df.loc[activity_df["Name"].isin(activity_choice)]
 
 # create and write graph
 st.write('Calories Burnt')
-c = alt.Chart(activity_filt_df).mark_bar().encode(
-     x='Start_Date', y='Calories').properties(width=600, height=300)
-st.write(c)
+# c = alt.Chart(activity_filt_df).mark_bar().encode(
+#      x='Start_Date', y='Calories').properties(width=600, height=300)
+cal_fig = px.bar(activity_filt_df, x="Start_Date", y="Steps", color='Name', barmode="group")
+st.write(cal_fig)
 
 st.write('Steps During Activity')
-c = alt.Chart(activity_filt_df).mark_bar().encode(
-     x='Start_Date', y='Steps').properties(width=600, height=300)
-st.write(c)
+# c = alt.Chart(activity_filt_df).mark_bar().encode(
+#      x='Start_Date', y='Steps').properties(width=600, height=300)
+steps_fig = px.bar(activity_filt_df, x="Start_Date", y="Steps", color='Name', barmode="group")
+st.write(steps_fig)
 
 st.write('Activity Base Data')
 st.write(activity_filt_df)
-
-# add sleep
-sleep_df = pd.read_pickle('sleep.pkl')
-st.write(sleep_df)
