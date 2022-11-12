@@ -32,6 +32,7 @@ class FitbitAnalysis:
             pd.DataFrame: activity data frame
         """
 
+
         # define last 10 days of data
         days_list = [str((datetime.datetime.now() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")) for i in
                      range(1, no_days_ago + 1)]
