@@ -5,6 +5,7 @@ from google_sheets import get_google_sheet
 #from data_collection import FitbitAnalysis
 import warnings
 
+SCOPE="function"
 
 def api_v1():
     warnings.warn(UserWarning("api v1, should use functions from v2"))
@@ -27,8 +28,12 @@ def test_get_google_sheet():
     # test columns
     assert len(result.axes[1]) == 4
 
+@pytest.fixture(scope='function')
+def shared_instance():
+    fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
+    yield fitinst
 
-def test_get_x_days_activity():
+def test_get_x_days_activity(shared_instance):
     fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
     result = fitinst.get_x_days_activity(10, client_id, client_secret)
 
