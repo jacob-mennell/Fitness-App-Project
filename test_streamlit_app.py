@@ -1,16 +1,9 @@
 import pandas as pd
-# import pytest
+import pytest
 import json
 from google_sheets import get_google_sheet
-from data_collection import get_x_days_activity
+#from data_collection import FitbitAnalysis
 import warnings
-
-# get credentials for api and google sheet source
-with open('cred.json') as data_file:
-    data = json.load(data_file)
-client_id = data['client_id']
-client_secret = data['client_secret']
-sheet_url = data['sheet_url']
 
 
 def api_v1():
@@ -23,7 +16,10 @@ def test_one():
 
 
 def test_get_google_sheet():
-    result = get_google_sheet(sheet_url, 'PB')
+    with open('cred.json') as data_file:
+        data = json.load(data_file)
+
+    result = get_google_sheet(data['sheet_url'], 'PB')
 
     #  test datatype
     assert isinstance(result, pd.DataFrame)
@@ -33,7 +29,9 @@ def test_get_google_sheet():
 
 
 def test_get_x_days_activity():
-    result = get_x_days_activity(15, client_id, client_secret)
+    fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
+    result = fitinst.get_x_days_activity(10, client_id, client_secret)
+
     #  test datatype
     assert isinstance(result, pd.DataFrame)
 
@@ -43,7 +41,7 @@ def test_get_x_days_activity():
     # test column names
     assert result.columns.to_list() == \
            [
-                 'id'
+               'id'
                , 'Name'
                , 'Start Date'
                , 'Calories'
