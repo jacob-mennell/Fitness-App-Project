@@ -85,7 +85,7 @@ else:
 st.write('Calories Burnt')
 # c = alt.Chart(activity_filt_df).mark_bar().encode(
 #      x='Start_Date', y='Calories').properties(width=600, height=300)
-cal_fig = px.bar(activity_filt_df, x="Start_Date", y="Steps", color='Name', barmode="group")
+cal_fig = px.bar(activity_filt_df, x="Start_Date", y="Calories", color='Name', barmode="group")
 st.write(cal_fig)
 
 st.write('Steps During Activity')
