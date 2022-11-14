@@ -8,6 +8,7 @@ import warnings
 # define scope for pytest.fixture
 scope = 'session'
 
+
 def api_v1():
     warnings.warn(UserWarning("api v1, should use functions from v2"))
     return 1
@@ -15,6 +16,7 @@ def api_v1():
 
 def test_one():
     assert api_v1() == 1
+
 
 @pytest.fixture(scope=scope)
 def get_cred():
@@ -25,13 +27,11 @@ def get_cred():
 
 @pytest.fixture(scope=scope)
 def shared_instance(get_cred):
-
     fitinst = FitbitAnalysis(get_cred['client_id'], get_cred['client_secret'])
     yield fitinst
 
 
 def test_get_google_sheet(get_cred):
-
     result = get_google_sheet(get_cred['sheet_url'], 'PB')
 
     #  test datatype
@@ -42,7 +42,6 @@ def test_get_google_sheet(get_cred):
 
 
 def test_get_x_days_activity(shared_instance):
-
     result = shared_instance.get_x_days_activity(10)
 
     #  test datatype
@@ -54,9 +53,8 @@ def test_get_x_days_activity(shared_instance):
     # test column names
     assert result.columns.to_list() == \
            [
-               'id'
-               , 'Name'
-               , 'Start Date'
-               , 'Calories'
-               , 'Steps'
-           ]
+               'id',
+               'Name',
+               'Start_Date',
+               'Calories',
+               'Steps']
