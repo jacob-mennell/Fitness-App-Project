@@ -32,7 +32,6 @@ class FitbitAnalysis:
             pd.DataFrame: activity data frame
         """
 
-
         # define last 10 days of data
         days_list = [str((datetime.datetime.now() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")) for i in
                      range(1, no_days_ago + 1)]
@@ -98,14 +97,15 @@ class FitbitAnalysis:
         return pd.DataFrame({'State': sleep_val_list, 'Time': sleep_time_list})
 
 
-# get credentials for api and google sheet source
-with open('cred.json') as data_file:
-    data = json.load(data_file)
+if __name__ == "__main__":
+    # get credentials for api and google sheet source
+    with open('cred.json') as data_file:
+        data = json.load(data_file)
 
-# export fitbit data to pkl file
-fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
-activity = fitinst.get_x_days_activity(30)
-activity.to_pickle('activity.pkl')
+    # export fitbit data to pkl file
+    fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
+    activity = fitinst.get_x_days_activity(30)
+    activity.to_pickle('activity.pkl')
 
-sleep = fitinst.get_x_days_sleep(30)
-sleep.to_pickle('sleep.pkl')
+    sleep = fitinst.get_x_days_sleep(30)
+    sleep.to_pickle('sleep.pkl')

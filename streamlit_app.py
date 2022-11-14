@@ -7,7 +7,7 @@ from google_sheets import get_google_sheet
 import cherrypy
 import fitbit as fitbit
 from gather_keys_oauth2 import OAuth2Server
-# from data_collection import get_x_days_activity
+from data_collection import FitbitAnalysis
 import json
 import plotly.express as px
 
@@ -67,6 +67,10 @@ st.subheader('General Activity Data')
 #activity.to_pickle('activity.pkl')
 
 # add filter for activity
+# export fitbit data to pkl file
+# fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
+# activity = fitinst.get_x_days_activity(30)
+# activity.to_pickle('activity.pkl')
 activity_df = pd.read_pickle('activity.pkl')
 activity_list = activity_df['Name'].drop_duplicates().to_list()
 activity_choice = st.sidebar.multiselect('Select your Activity', activity_list)
