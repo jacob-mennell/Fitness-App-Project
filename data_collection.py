@@ -87,18 +87,22 @@ class FitbitAnalysis:
         # get activities for last x days
         sleep_time_list = []
         sleep_val_list = []
+        date_of_sleep = []
 
         for day in days_list:
             sleep_func = self.fit.sleep(date=day)
             for i in sleep_func['sleep'][0]['minuteData']:
+                date_of_sleep.append(sleep_func['sleep'][0]['dateOfSleep'])
                 sleep_time_list.append(i['dateTime'])
                 sleep_val_list.append(i['value'])
 
-        return pd.DataFrame({'State': sleep_val_list, 'Time': sleep_time_list})
+        df = pd.DataFrame({'State': sleep_val_list, 'Time': sleep_time_list, 'Date': date_of_sleep})
+        df['State_Detail'] = df['State'].map({'2': 'Awake', '3': 'Alert', '1': 'Asleep'})
+
+        return df
 
 
 if __name__ == "__main__":
-
     # get credentials for api and google sheet source
     with open('cred.json') as data_file:
         data = json.load(data_file)

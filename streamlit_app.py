@@ -123,9 +123,9 @@ st.write(steps_fig)
 sleep_df = pd.read_pickle('sleep.pkl')
 
 # filter dates
-sleep_df['Time'] = pd.to_datetime(sleep_df['Time']).dt.date
-#sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["Time"] >= start_date]
-#sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["Time"] <= end_date]
+sleep_df['Date'] = pd.to_datetime(sleep_df['Date']).dt.date
+sleep_filt_df = sleep_df.loc[sleep_df["Date"] >= start_date]
+sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["Date"] <= end_date]
 
-sleep_fig = px.bar(sleep_df, x="Time", y="State", color='State', barmode="group")
+sleep_fig = px.bar(sleep_df, x="Date", y="State", color='State_Detail', barmode="group")
 st.write(sleep_fig)
