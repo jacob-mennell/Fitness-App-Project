@@ -5,9 +5,6 @@ from google_sheets import get_google_sheet
 from data_collection import FitbitAnalysis
 import warnings
 
-# define scope for pytest.fixture
-scope = 'session'
-
 
 def api_v1():
     warnings.warn(UserWarning("api v1, should use functions from v2"))
@@ -18,14 +15,14 @@ def test_one():
     assert api_v1() == 1
 
 
-@pytest.fixture(scope=scope)
+@pytest.fixture(scope='session')
 def get_cred():
     with open('cred.json') as data_file:
         data = json.load(data_file)
     return data
 
 
-@pytest.fixture(scope=scope)
+@pytest.fixture(scope='session')
 def shared_instance(get_cred):
     fitinst = FitbitAnalysis(get_cred['client_id'], get_cred['client_secret'])
     yield fitinst
