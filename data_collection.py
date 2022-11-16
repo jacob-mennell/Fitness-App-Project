@@ -98,6 +98,7 @@ class FitbitAnalysis:
 
 
 if __name__ == "__main__":
+
     # get credentials for api and google sheet source
     with open('cred.json') as data_file:
         data = json.load(data_file)

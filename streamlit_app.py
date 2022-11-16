@@ -8,6 +8,7 @@ import cherrypy
 import fitbit as fitbit
 from gather_keys_oauth2 import OAuth2Server
 from data_collection import FitbitAnalysis
+import datetime
 import json
 import plotly.express as px
 
@@ -21,6 +22,18 @@ sheet_url = data['sheet_url']
 
 # set streamlit app headers
 st.header('Fitness Monitoring App')
+st.write('App looks at Gym Performance and Fitbit Activity over user defined time period')
+
+# user date input
+today = datetime.date.today()
+tomorrow = today + datetime.timedelta(days=1)
+start_date = st.sidebar.date_input('Start date', (today - datetime.timedelta(days=60)))
+end_date = st.sidebar.date_input('End date', tomorrow)
+if start_date < end_date:
+    st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
+else:
+    st.error('Error: End date must fall after start date.')
+
 st.subheader('Gym Strength Data')
 st.write('Gym History Table')
 
@@ -34,13 +47,16 @@ lifts_df['Weight'] = lifts_df['Weight'].astype(float)
 lifts_df['Reps'] = lifts_df['Reps'].astype(str)
 lifts_df['Sets'] = lifts_df['Sets'].astype(int)
 lifts_df['Notes'] = lifts_df['Notes'].astype(str)
-lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y')
+lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y').dt.date
 
 # add filter for exercise
 # exercise_list_master = lifts_df['Exercise'].drop_duplicates()
 make_choice = st.sidebar.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
 st.write('You selected:', make_choice)
 lifts_filt_df = lifts_df.loc[lifts_df["Exercise"] == make_choice]
+lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
+lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
+
 
 # create and write graph
 c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).encode(
@@ -49,15 +65,15 @@ c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).
 st.write(c)
 
 # show base data
-st.write('Gym Base Data')
-st.dataframe(lifts_filt_df)
+# st.write('Gym Base Data')
+# st.dataframe(lifts_filt_df)
 
 # fixed one rep max table
-st.write('PB Table')
+st.write('Gym Personal Best')
 pb_df['Reps'] = pb_df['Reps'].astype(str)
-fig = px.bar(pb_df, x="Exercise", y="Weight", color="Reps", barmode="group")
+fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps", barmode="group", title="All time PB table ")
 st.write(fig)
-st.dataframe(pb_df)
+#st.dataframe(pb_df)
 
 # fitbit data
 st.subheader('General Activity Data')
@@ -81,6 +97,11 @@ if not activity_choice:
 else:
     activity_filt_df = activity_df.loc[activity_df["Name"].isin(activity_choice)]
 
+# filter dates
+activity_filt_df['Start_Date'] = pd.to_datetime(activity_filt_df['Start_Date'], format='%d/%m/%Y').dt.date
+activity_filt_df = activity_filt_df.loc[activity_filt_df["Start_Date"] >= start_date]
+activity_filt_df = activity_filt_df.loc[activity_filt_df["Start_Date"] <= end_date]
+
 # create and write graph
 st.write('Calories Burnt')
 # c = alt.Chart(activity_filt_df).mark_bar().encode(
@@ -88,11 +109,23 @@ st.write('Calories Burnt')
 cal_fig = px.bar(activity_filt_df, x="Start_Date", y="Calories", color='Name', barmode="group")
 st.write(cal_fig)
 
+# create and write graph
 st.write('Steps During Activity')
 # c = alt.Chart(activity_filt_df).mark_bar().encode(
 #      x='Start_Date', y='Steps').properties(width=600, height=300)
 steps_fig = px.bar(activity_filt_df, x="Start_Date", y="Steps", color='Name', barmode="group")
 st.write(steps_fig)
 
-st.write('Activity Base Data')
-st.write(activity_filt_df)
+# st.write('Activity Base Data')
+# st.write(activity_filt_df)
+
+# sleep data
+sleep_df = pd.read_pickle('sleep.pkl')
+
+# filter dates
+sleep_df['Time'] = pd.to_datetime(sleep_df['Time']).dt.date
+#sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["Time"] >= start_date]
+#sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["Time"] <= end_date]
+
+sleep_fig = px.bar(sleep_df, x="Time", y="State", color='State', barmode="group")
+st.write(sleep_fig)
