@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 import json
 from google_sheets import get_google_sheet
-from data_collection import FitbitAnalysis
+from get_fitbit_date import FitbitAnalysis
 import warnings
 
 
