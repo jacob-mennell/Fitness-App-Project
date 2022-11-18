@@ -16,11 +16,11 @@ class FitbitAnalysis:
         # create a FitbitOauth2Client object.
         server = OAuth2Server(self.client_id, self.client_secret)
         server.browser_authorize()
-        ACCESS_TOKEN = str(server.fitbit.client.session.token['access_token'])
-        REFRESH_TOKEN = str(server.fitbit.client.session.token['refresh_token'])
+        access_token = str(server.fitbit.client.session.token['access_token'])
+        refresh_token = str(server.fitbit.client.session.token['refresh_token'])
 
-        self.fit = fitbit.Fitbit(client_id, client_secret, oauth2=True, access_token=ACCESS_TOKEN,
-                                 refresh_token=REFRESH_TOKEN)
+        self.fit = fitbit.Fitbit(client_id, client_secret, oauth2=True, access_token=access_token,
+                                 refresh_token=refresh_token)
 
     def get_x_days_activity(self, no_days_ago: int) -> pd.DataFrame:
         """_summary_
