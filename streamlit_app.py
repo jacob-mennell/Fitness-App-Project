@@ -13,12 +13,14 @@ import json
 import plotly.express as px
 
 
-# get credentials for api and google sheet source
+# get credentials for api and google sheet
 with open('cred.json') as data_file:
     data = json.load(data_file)
 client_id = data['client_id']
 client_secret = data['client_secret']
 sheet_url = data['sheet_url']
+
+############################## streamlit app #############################
 
 # set streamlit app headers
 st.header('Fitness Monitoring App')
@@ -34,15 +36,17 @@ if start_date < end_date:
 else:
     st.error('Error: End date must fall after start date.')
 
+################### historical lifts from google sheets ##################
+
+# set headers
 st.subheader('Gym Strength Data')
 st.write('Gym History Table')
 
-# historical lifts from google sheets
+# get data using gspread
 lifts_df = get_google_sheet(sheet_url, 'Lifts')
 pb_df = get_google_sheet(sheet_url, 'PB')
 
 # minor cleaning
-# lifts_df = lifts_df.astype(str)
 lifts_df['Weight'] = lifts_df['Weight'].astype(float)
 lifts_df['Reps'] = lifts_df['Reps'].astype(str)
 lifts_df['Sets'] = lifts_df['Sets'].astype(int)
@@ -57,38 +61,33 @@ lifts_filt_df = lifts_df.loc[lifts_df["Exercise"] == make_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
 
-
 # create and write graph
 c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).encode(
-     x='Day', y='Weight', color='Reps').properties(width=600, height=300).configure_point(
+    x='Day', y='Weight', color='Reps').properties(width=600, height=300).configure_point(
     size=150)
 st.write(c)
-
-# show base data
-# st.write('Gym Base Data')
-# st.dataframe(lifts_filt_df)
 
 # fixed one rep max table
 st.write('Gym Personal Best')
 pb_df['Reps'] = pb_df['Reps'].astype(str)
-fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps", barmode="group", title="All time PB table ")
+fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps",
+             barmode="group", title="All time PB table ")
 st.write(fig)
-#st.dataframe(pb_df)
 
-# fitbit data
+############################### fitbit data ##############################
+
+# set header
 st.subheader('General Activity Data')
 
-# fitbit data
-#activity = get_x_days_activity(1, client_id, client_secret)
-#activity.to_pickle('activity.pkl')
-
-# add filter for activity
-# export fitbit data to pkl file
 # fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
 # activity = fitinst.get_x_days_activity(30)
 # activity.to_pickle('activity.pkl')
+
+# read from pkl file as API not working in streamlit currently
 activity_df = pd.read_pickle('activity.pkl')
 activity_list = activity_df['Name'].drop_duplicates().to_list()
+
+# filter activities
 activity_choice = st.sidebar.multiselect('Select your Activity', activity_list)
 st.write('You selected:', activity_choice)
 
@@ -116,16 +115,14 @@ st.write('Steps During Activity')
 steps_fig = px.bar(activity_filt_df, x="Start_Date", y="Steps", color='Name', barmode="group")
 st.write(steps_fig)
 
-# st.write('Activity Base Data')
-# st.write(activity_filt_df)
-
 # sleep data
 sleep_df = pd.read_pickle('sleep.pkl')
 
 # filter dates
-sleep_df['Date'] = pd.to_datetime(sleep_df['Date']).dt.date
-sleep_filt_df = sleep_df.loc[sleep_df["Date"] >= start_date]
-sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["Date"] <= end_date]
+sleep_df['dateOfSleep'] = pd.to_datetime(sleep_df['dateOfSleep']).dt.date
+sleep_filt_df = sleep_df.loc[sleep_df["dateOfSleep"] >= start_date]
+sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["dateOfSleep"] <= end_date]
 
-sleep_fig = px.bar(sleep_df, x="Date", y="State", color='State_Detail', barmode="group")
+# create and write graph
+sleep_fig = px.bar(sleep_filt_df, x="dateOfSleep", y="minutesAsleep", barmode="group")
 st.write(sleep_fig)

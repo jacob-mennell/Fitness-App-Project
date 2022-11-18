@@ -88,7 +88,6 @@ class FitbitAnalysis:
         sleep_time_list = []
         sleep_val_list = []
         date_of_sleep = []
-        agg_df = pd.DataFrame()
 
         for day in days_list:
             sleep_func = self.fit.sleep(date=day)
@@ -96,6 +95,43 @@ class FitbitAnalysis:
                 date_of_sleep.append(sleep_func['sleep'][0]['dateOfSleep'])
                 sleep_time_list.append(i['dateTime'])
                 sleep_val_list.append(i['value'])
+
+        df = pd.DataFrame({'State': sleep_val_list, 'Time': sleep_time_list, 'Date': date_of_sleep})
+        df['State_Detail'] = df['State'].map({'2': 'Awake', '3': 'Alert', '1': 'Asleep'})
+
+        return df
+
+    def get_x_days_sleep_agg(self, no_days_ago: int) -> pd.DataFrame:
+        """_summary_
+
+        Args:
+            no_days_ago (int): days of data to return
+
+        Returns:
+            pd.DataFrame: Aggregated sleep data frame
+        """
+
+        # define last 10 days of data
+        days_list = [str((datetime.datetime.now() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")) for i in
+                     range(1, no_days_ago + 1)]
+
+        # create blank DataFrame
+        agg_df = pd.DataFrame(
+            columns=[
+                'dateOfSleep',
+                'isMainSleep',
+                'efficiency',
+                'duration',
+                'minutesAsleep',
+                'minutesAwake',
+                'awakeCount',
+                'restlessCount',
+                'restlessDuration',
+                'timeInBed']
+        )
+
+        for day in days_list:
+            sleep_func = self.fit.sleep(date=day)['sleep'][0]
 
             agg_df_temp = pd.DataFrame({'dateOfSleep': sleep_func['dateOfSleep'],
                                         'isMainSleep': sleep_func['isMainSleep'],
@@ -109,12 +145,9 @@ class FitbitAnalysis:
                                         'timeInBed': sleep_func['timeInBed']
                                         }, index=[0])
 
-            agg_df = pd.concat(agg_df_temp, agg_df)
+            agg_df = pd.concat(agg_df, agg_df_temp)
 
-        df = pd.DataFrame({'State': sleep_val_list, 'Time': sleep_time_list, 'Date': date_of_sleep})
-        df['State_Detail'] = df['State'].map({'2': 'Awake', '3': 'Alert', '1': 'Asleep'})
-
-        return df, agg_df
+        return df
 
 
 if __name__ == "__main__":
@@ -127,5 +160,5 @@ if __name__ == "__main__":
     activity = fitinst.get_x_days_activity(30)
     activity.to_pickle('activity.pkl')
 
-    sleep, agg_sleep = fitinst.get_x_days_sleep(30)
+    sleep = fitinst.get_x_days_sleep_agg(30)
     sleep.to_pickle('sleep.pkl')
