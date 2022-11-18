@@ -3,11 +3,10 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 import os
-from google_sheets import get_google_sheet
-import cherrypy
-import fitbit as fitbit
+from get_google_sheets_data import get_google_sheet
+from get_fitbit_data import FitbitAnalysis
 from gather_keys_oauth2 import OAuth2Server
-from get_fitbit_date import FitbitAnalysis
+import cherrypy
 import datetime
 import json
 import plotly.express as px
