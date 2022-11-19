@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 import os
 from get_google_sheets_data import get_google_sheet
-from get_fitibit_data.py import FitbitAnalysis
+from get_fitbit_data import FitbitAnalysis
 from gather_keys_oauth2 import OAuth2Server
 import cherrypy
 import datetime
