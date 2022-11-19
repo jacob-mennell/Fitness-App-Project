@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 import os
 from get_google_sheets_data import get_google_sheet
-from get_fitbit_data import FitbitAnalysis
+from get_fitibit_data.py import FitbitAnalysis
 from gather_keys_oauth2 import OAuth2Server
 import cherrypy
 import datetime
@@ -123,5 +123,6 @@ sleep_filt_df = sleep_df.loc[sleep_df["dateOfSleep"] >= start_date]
 sleep_filt_df = sleep_filt_df.loc[sleep_filt_df["dateOfSleep"] <= end_date]
 
 # create and write graph
-sleep_fig = px.bar(sleep_filt_df, x="dateOfSleep", y="minutesAsleep", barmode="group")
+st.write('Sleep Data')
+sleep_fig = px.line(sleep_filt_df, x="dateOfSleep", y="minutesAsleep")
 st.write(sleep_fig)

@@ -145,9 +145,9 @@ class FitbitAnalysis:
                                         'timeInBed': sleep_func['timeInBed']
                                         }, index=[0])
 
-            agg_df = pd.concat(agg_df, agg_df_temp)
+            agg_df = pd.concat([agg_df, agg_df_temp], join="inner")
 
-        return df
+        return agg_df
 
 
 if __name__ == "__main__":
