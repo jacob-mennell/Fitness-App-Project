@@ -7,11 +7,21 @@ from get_google_sheets_data import get_google_sheet
 import datetime
 import plotly.express as px
 import plotly.figure_factory as ff
+import sqlite3
 
-""" 
-THIS SCRIPT CONTAINS ONLY GYM RECORD DATA FROM GOOGLE SHEETS
-NO FIT BIT DATA  - SIMPLIFIED FOR PUBLISHING     
-"""
+
+
+def add_dfForm():
+    """
+    :rtype: object
+    """
+    row = pd.DataFrame({'Day': [st.session_state.input_date],
+                        'Exercise': [st.session_state.input_exercise],
+                        'Weight': [st.session_state.input_weight],
+                        'Reps': [st.session_state.input_reps],
+                        'Sets': [st.session_state.input_sets]})
+    st.session_state.data = pd.concat([st.session_state.data, row])
+
 
 # using st.secrets
 sheet_url = st.secrets['SHEET_URL']
@@ -22,6 +32,34 @@ google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 # set streamlit app headers
 st.header('Fitness Monitoring App')
 st.write('App looks at Gym Performance and Fitbit Activity over user defined time period')
+
+# input new data
+st.write('Add Data')
+if 'data' not in st.session_state:
+    data = pd.DataFrame({'Day': [], 'Exercise': [], 'Weight': [], 'Reps': [], 'Sets': []})
+    st.session_state.data = data
+
+data = st.session_state.data
+
+dfForm = st.form(key='dfForm')
+with dfForm:
+    dfColumns = st.columns(4)
+    with dfColumns[0]:
+        st.date_input('Day', key='input_date')
+    with dfColumns[1]:
+        st.selectbox('Exercise', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'], key='input_exercise')
+    with dfColumns[2]:
+        st.number_input('Weight', key='input_weight')
+    with dfColumns[3]:
+        st.number_input('Reps', key='input_reps')
+    with dfColumns[3]:
+        st.number_input('Sets', key='input_sets')
+    st.form_submit_button(on_click=add_dfForm)
+
+# Connect to sqlite3 database - work in progress
+conn = sqlite3.connect('fitness_db')
+# send each dataframe to sql
+data.to_sql('GymHistory', conn, if_exists='append', index=True, index_label='InputID')
 
 # user date input
 today = datetime.date.today()
@@ -67,10 +105,9 @@ st.write(c)
 # fixed one rep max table
 st.write('Gym Personal Best')
 pb_df['Reps'] = pb_df['Reps'].astype(str)
-colorscale = [[0, '#ff8c00'],[.5, '#808080'],[1, '#d3d3d3']]
+colorscale = [[0, '#ff8c00'], [.5, '#808080'], [1, '#d3d3d3']]
 fig = ff.create_table(pb_df, colorscale=colorscale)
-
 # make text size larger
 for i in range(len(fig.layout.annotations)):
-    fig.layout.annotations[i].font.size = 16
+    fig.layout.annotations[i].font.size = 12
 st.write(fig)
