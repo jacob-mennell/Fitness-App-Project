@@ -81,12 +81,12 @@ st.write(fig)
 # set header
 st.subheader('General Activity Data')
 
-fitinst = FitbitAnalysis(client_id, client_secret)
-activity_df = fitinst.get_x_days_activity(30)
+#fitinst = FitbitAnalysis(client_id, client_secret)
+#activity_df = fitinst.get_x_days_activity(30)
 # activity.to_pickle('activity.pkl')
 
 # read from pkl file as API not working in streamlit currently
-# activity_df = pd.read_pickle('activity.pkl')
+activity_df = pd.read_pickle('activity.pkl')
 activity_list = activity_df['Name'].drop_duplicates().to_list()
 
 # filter activities
