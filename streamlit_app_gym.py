@@ -6,6 +6,7 @@ import os
 from get_google_sheets_data import get_google_sheet
 import datetime
 import plotly.express as px
+import plotly.figure_factory as ff
 
 """ 
 THIS SCRIPT CONTAINS ONLY GYM RECORD DATA FROM GOOGLE SHEETS
@@ -66,6 +67,10 @@ st.write(c)
 # fixed one rep max table
 st.write('Gym Personal Best')
 pb_df['Reps'] = pb_df['Reps'].astype(str)
-fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps",
-             barmode="group", title="All time PB table ")
+colorscale = [[0, '#ff8c00'],[.5, '#808080'],[1, '#d3d3d3']]
+fig = ff.create_table(pb_df, colorscale=colorscale)
+
+# make text size larger
+for i in range(len(fig.layout.annotations)):
+    fig.layout.annotations[i].font.size = 16
 st.write(fig)
