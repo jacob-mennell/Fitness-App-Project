@@ -10,7 +10,6 @@ import plotly.figure_factory as ff
 import sqlite3
 
 
-
 def add_dfForm():
     """
     :rtype: object
@@ -31,10 +30,10 @@ google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 
 # set streamlit app headers
 st.header('Fitness Monitoring App')
-st.write('App looks at Gym Performance and Fitbit Activity over user defined time period')
+st.write('App looks at Gym Performance and Fitbit Activity over user defined period')
 
 # input new data
-st.write('Add Data')
+st.write('Add Data to the App')
 if 'data' not in st.session_state:
     data = pd.DataFrame({'Day': [], 'Exercise': [], 'Weight': [], 'Reps': [], 'Sets': []})
     st.session_state.data = data
@@ -61,17 +60,8 @@ conn = sqlite3.connect('fitness_db')
 # send each dataframe to sql
 data.to_sql('GymHistory', conn, if_exists='append', index=True, index_label='InputID')
 
-# user date input
-today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=1)
-start_date = st.sidebar.date_input('Start date', (today - datetime.timedelta(days=60)))
-end_date = st.sidebar.date_input('End date', tomorrow)
-if start_date < end_date:
-    st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
-else:
-    st.error('Error: End date must fall after start date.')
-
 ################### historical lifts from google sheets ##################
+# data soon to read directly from SQL
 
 # set headers
 st.subheader('Gym Strength Data')
@@ -90,24 +80,45 @@ lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y').dt.date
 
 # add filter for exercise
 # exercise_list_master = lifts_df['Exercise'].drop_duplicates()
-make_choice = st.sidebar.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
-st.write('You selected:', make_choice)
+# was sidebar input but now just normal
+make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
+#st.write('You selected:', make_choice)
+
+# user date input
+today = datetime.date.today()
+tomorrow = today + datetime.timedelta(days=1)
+start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
+end_date = st.date_input('End date', tomorrow)
+if start_date < end_date:
+    st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
+else:
+    st.error('Error: End date must fall after start date.')
+
+# filter inputs
 lifts_filt_df = lifts_df.loc[lifts_df["Exercise"] == make_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
 
 # create and write graph
-c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).encode(
-    x='Day', y='Weight', color='Reps').properties(width=600, height=300).configure_point(
-    size=150)
-st.write(c)
+# c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).encode(
+#     x='Day', y='Weight', color='Reps').properties(width=600, height=300).configure_point(
+#     size=150)
+# st.write(c)
+fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps',markers=True, title=f'Powerlifting Performance: {make_choice}')
+fig.update_traces(marker=dict(size=10))
+st.write(fig)
+
+# Looking at PBs
+st.write('Gym PBs')
+pb_df['Reps'] = pb_df['Reps'].astype(str)
+fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps",
+             barmode="group", title="All Time PB - Varying Reps ")
+st.write(fig)
 
 # fixed one rep max table
-st.write('Gym Personal Best')
-pb_df['Reps'] = pb_df['Reps'].astype(str)
-colorscale = [[0, '#ff8c00'], [.5, '#808080'], [1, '#d3d3d3']]
-fig = ff.create_table(pb_df, colorscale=colorscale)
-# make text size larger
-for i in range(len(fig.layout.annotations)):
-    fig.layout.annotations[i].font.size = 12
-st.write(fig)
+# # colorscale = [[0, '#ff8c00'], [.5, '#808080'], [1, '#d3d3d3']]
+# fig = ff.create_table(pb_df) # , colorscale=colorscale)
+# # make text size larger
+# for i in range(len(fig.layout.annotations)):
+#     fig.layout.annotations[i].font.size = 12
+# st.write(fig)
