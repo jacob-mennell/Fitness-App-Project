@@ -8,4 +8,4 @@ e.g. exercises, sets, reps and weights
 
 
 Link to reduced App with just Gym Data:
-https://jacob-mennell-fitness-app-project-streamlit-app-gym-49wnvk.streamlit.app/
+https://jacob-mennell-fitness-app-project-streamlit-app-gym-5dp6js.streamlit.app/
