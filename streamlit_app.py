@@ -10,14 +10,17 @@ import cherrypy
 import datetime
 import json
 import plotly.express as px
-
+import ast
 
 # get credentials for api and google sheet
-with open('cred.json') as data_file:
-    data = json.load(data_file)
-client_id = data['client_id']
-client_secret = data['client_secret']
-sheet_url = data['sheet_url']
+# with open('cred.json') as data_file:
+#     data = json.load(data_file)
+
+# using st.secrets
+client_id = st.secrets['CLIENT_ID']
+client_secret = st.secrets['CLIENT_SECRET']
+sheet_url = st.secrets['SHEET_URL']
+google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 
 ############################## streamlit app #############################
 
@@ -42,8 +45,8 @@ st.subheader('Gym Strength Data')
 st.write('Gym History Table')
 
 # get data using gspread
-lifts_df = get_google_sheet(sheet_url, 'Lifts')
-pb_df = get_google_sheet(sheet_url, 'PB')
+lifts_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Lifts')
+pb_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='PB')
 
 # minor cleaning
 lifts_df['Weight'] = lifts_df['Weight'].astype(float)
@@ -78,12 +81,12 @@ st.write(fig)
 # set header
 st.subheader('General Activity Data')
 
-# fitinst = FitbitAnalysis(data['client_id'], data['client_secret'])
-# activity = fitinst.get_x_days_activity(30)
+fitinst = FitbitAnalysis(client_id, client_secret)
+activity_df = fitinst.get_x_days_activity(30)
 # activity.to_pickle('activity.pkl')
 
 # read from pkl file as API not working in streamlit currently
-activity_df = pd.read_pickle('activity.pkl')
+# activity_df = pd.read_pickle('activity.pkl')
 activity_list = activity_df['Name'].drop_duplicates().to_list()
 
 # filter activities

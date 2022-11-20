@@ -4,9 +4,9 @@ import gspread as gs
 
 def get_google_sheet(sheet_url: str,
                      sheet_name: str,
-                     service_account_file='service_account.json') -> pd.DataFrame:
+                     credentials: dict) -> pd.DataFrame:
     '''
-    :param service_account_file: str, default is service_account.json
+    :param credentials: google sheet credentials from service_account.json
     :param sheet_url: str
     :param sheet_name: str
     :return: data frame
@@ -14,7 +14,7 @@ def get_google_sheet(sheet_url: str,
     # sheet_url = os.getenv('sheet_url')
 
     # authenticate
-    gc = gs.service_account(filename=service_account_file)
+    gc = gs.service_account_from_dict(credentials)
 
     # open from url
     sh = gc.open_by_url(sheet_url)
