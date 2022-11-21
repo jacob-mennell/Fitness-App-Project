@@ -26,7 +26,7 @@ google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 
 # set streamlit app headers
 st.header('Fitness Monitoring App')
-st.write('App allows user input of Gym Performance and visualisation of historic performance')
+st.write('App allows user input of gym performance and visualisation of historic performance')
 
 # user date input
 today = datetime.date.today()
