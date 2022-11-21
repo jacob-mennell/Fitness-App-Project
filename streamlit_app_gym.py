@@ -47,11 +47,11 @@ with dfForm:
     with dfColumns[1]:
         st.selectbox('Exercise', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'], key='input_exercise')
     with dfColumns[2]:
-        st.number_input('Weight', key='input_weight')
+        st.number_input('Weight', key='input_weight', min_value=1, max_value=200, value=100, step=1)
     with dfColumns[3]:
-        st.number_input('Reps', key='input_reps')
+        st.number_input('Reps', key='input_reps',min_value=1, max_value=20, value=8, step=1)
     with dfColumns[3]:
-        st.number_input('Sets', key='input_sets')
+        st.number_input('Sets', key='input_sets',min_value=1, max_value=5, value=3, step=1)
     with dfColumns[3]:
         st.text_input('Notes', key='input_notes')
     st.form_submit_button(on_click=add_dfForm)
@@ -99,25 +99,18 @@ lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
 
 # create and write graph
-# c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).encode(
-#     x='Day', y='Weight', color='Reps').properties(width=600, height=300).configure_point(
-#     size=150)
-# st.write(c)
 fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps',markers=True, title=f'Powerlifting Performance: {make_choice}')
 fig.update_traces(marker=dict(size=10))
 st.write(fig)
 
 # Looking at PBs
 st.write('Gym PBs')
+pb_df = lifts_df[lifts_df["Exercise"].isin(['BENCH PRESS', 'SQUAT', 'DEADLIFT'])]
+pb_df['Weight'] = pb_df['Weight'].astype(float)
+pb_df = pb_df.sort_values(by=['Exercise', 'Weight', 'Day'], ascending=[False, False,True]).drop_duplicates(['Exercise'])
+
+# formatting for graph
 pb_df['Reps'] = pb_df['Reps'].astype(str)
 fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps",
              barmode="group", title="All Time PB - Varying Reps ")
 st.write(fig)
-
-# fixed one rep max table
-# # colorscale = [[0, '#ff8c00'], [.5, '#808080'], [1, '#d3d3d3']]
-# fig = ff.create_table(pb_df) # , colorscale=colorscale)
-# # make text size larger
-# for i in range(len(fig.layout.annotations)):
-#     fig.layout.annotations[i].font.size = 12
-# st.write(fig)
