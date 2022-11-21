@@ -1,5 +1,6 @@
 import pandas as pd
 import gspread as gs
+import gspread_dataframe as gd
 
 
 def get_google_sheet(sheet_url: str,
@@ -29,3 +30,30 @@ def get_google_sheet(sheet_url: str,
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
 
     return df
+
+
+def export_to_google_sheets(sheet_url: str,
+                            sheet_name: str,
+                            df_new: pd.DataFrame,
+                            credentials: dict) -> None:
+    # authenticate
+    gc = gs.service_account_from_dict(credentials)
+
+    # open from url
+    sh = gc.open_by_url(sheet_url)
+
+    # select workbook
+    sheet = sh.worksheet(sheet_name)
+
+    # add rows from fdf
+    df_current = get_google_sheet(sheet_url, sheet_name, credentials)
+
+    final_df = pd.concat([df_current, df_new], join="inner")
+
+    sheet.clear()
+
+    gd.set_with_dataframe(worksheet=sheet,
+                          dataframe=final_df,
+                          include_index=False,
+                          include_column_header=True,
+                          resize=True)

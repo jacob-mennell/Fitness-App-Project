@@ -3,7 +3,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 import os
-from get_google_sheets_data import get_google_sheet
+from get_google_sheets_data import get_google_sheet, export_to_google_sheets
 import datetime
 import plotly.express as px
 import plotly.figure_factory as ff
@@ -35,7 +35,7 @@ st.write('App looks at Gym Performance and Fitbit Activity over user defined per
 # input new data
 st.write('Add Data to the App')
 if 'data' not in st.session_state:
-    data = pd.DataFrame({'Day': [], 'Exercise': [], 'Weight': [], 'Reps': [], 'Sets': []})
+    data = pd.DataFrame({'Day': [], 'Exercise': [], 'Weight': [], 'Reps': [], 'Sets': [], 'Notes': []})
     st.session_state.data = data
 
 data = st.session_state.data
@@ -53,12 +53,12 @@ with dfForm:
         st.number_input('Reps', key='input_reps')
     with dfColumns[3]:
         st.number_input('Sets', key='input_sets')
+    with dfColumns[3]:
+        st.text_input('Notes', key='input_notes')
     st.form_submit_button(on_click=add_dfForm)
 
-# Connect to sqlite3 database - work in progress
-conn = sqlite3.connect('fitness_db')
-# send each dataframe to sql
-data.to_sql('GymHistory', conn, if_exists='append', index=True, index_label='InputID')
+# send data back to Google Sheets for storage
+export_to_google_sheets(sheet_url=sheet_url, df_new=data, credentials=google_sheet_cred_dict, sheet_name='Lifts')
 
 ################### historical lifts from google sheets ##################
 # data soon to read directly from SQL
