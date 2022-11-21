@@ -7,8 +7,7 @@ e.g. exercises, sets, reps and weight
 - Develop Streamlit web app (streamlit_app_gym.py) for user interface to input data to google cloud and to visualise lift trends.
 
 Secondary: 
-- Combine fitbit data with recorded data (Google Sheets) from workouts
-e.g. exercises, sets, reps and weights (streamlit_app.py)
+- Combine fitbit data with recorded data from workouts e.g. exercises, sets, reps and weights (streamlit_app.py)
 - Currently fitbit data is read from a _.pkl_ file due to issues accessing the data directly in the streamlit environment.
 
 Link to reduced App with just Gym Data:
