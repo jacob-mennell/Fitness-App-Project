@@ -69,11 +69,16 @@ c = alt.Chart(lifts_filt_df).mark_line(point=alt.OverlayMarkDef(color="white")).
     size=150)
 st.write(c)
 
-# fixed one rep max table
-st.write('Gym Personal Best')
+# Looking at PBs
+st.write('Gym PBs')
+pb_df = lifts_df[lifts_df["Exercise"].isin(['BENCH PRESS', 'SQUAT', 'DEADLIFT'])]
+pb_df['Weight'] = pb_df['Weight'].astype(float)
+pb_df = pb_df.sort_values(by=['Exercise', 'Weight', 'Day'], ascending=[False, False,True]).drop_duplicates(['Exercise'])
+
+# formatting for graph
 pb_df['Reps'] = pb_df['Reps'].astype(str)
 fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps",
-             barmode="group", title="All time PB table ")
+             barmode="group", title="All Time PB - Varying Reps ")
 st.write(fig)
 
 ############################### fitbit data ##############################
@@ -81,12 +86,12 @@ st.write(fig)
 # set header
 st.subheader('General Activity Data')
 
-fitinst = FitbitAnalysis(client_id, client_secret)
-activity_df = fitinst.get_x_days_activity(30)
-activity.to_pickle('activity.pkl')
+#fitinst = FitbitAnalysis(client_id, client_secret)
+#activity_df = fitinst.get_x_days_activity(30)
+#activity.to_pickle('activity.pkl')
 
 # read from pkl file as API not working in streamlit currently
-# activity_df = pd.read_pickle('activity.pkl')
+activity_df = pd.read_pickle('activity.pkl')
 activity_list = activity_df['Name'].drop_duplicates().to_list()
 
 # filter activities
@@ -118,8 +123,9 @@ steps_fig = px.bar(activity_filt_df, x="Start_Date", y="Steps", color='Name', ba
 st.write(steps_fig)
 
 # sleep data
-sleep_df = fitinst.get_x_days_sleep_agg(30)
-# sleep_df = pd.read_pickle('sleep.pkl')
+# read from pkl file as API not working in streamlit currently
+#sleep_df = fitinst.get_x_days_sleep_agg(30)
+sleep_df = pd.read_pickle('sleep.pkl')
 
 # filter dates
 sleep_df['dateOfSleep'] = pd.to_datetime(sleep_df['dateOfSleep']).dt.date
