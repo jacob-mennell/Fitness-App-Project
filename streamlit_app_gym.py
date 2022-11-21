@@ -7,7 +7,6 @@ from get_google_sheets_data import get_google_sheet, export_to_google_sheets
 import datetime
 import plotly.express as px
 import plotly.figure_factory as ff
-import sqlite3
 
 
 def add_dfForm():
