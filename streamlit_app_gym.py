@@ -19,7 +19,7 @@ def add_dfForm():
                         'Reps': [st.session_state.input_reps],
                         'Sets': [st.session_state.input_sets],
                         'Notes': [st.session_state.input_notes],
-                        'Name': [st.session_state.input_name]
+                        'User': [st.session_state.input_name]
                         })
     st.session_state.data = pd.concat([st.session_state.data, row])
 
@@ -69,7 +69,13 @@ st.subheader('Record Sets')
 if check_password():
 
     if 'data' not in st.session_state:
-        data = pd.DataFrame({'Day': [], 'Exercise': [], 'Weight': [], 'Reps': [], 'Sets': [], 'Notes': [], 'Name': []})
+        data = pd.DataFrame({'Day': [],
+                             'Exercise': [],
+                             'Weight': [],
+                             'Reps': [],
+                             'Sets': [],
+                             'Notes': [],
+                             'User': []})
         st.session_state.data = data
 
     data = st.session_state.data
@@ -90,7 +96,7 @@ if check_password():
         with dfColumns[5]:
             st.text_input('Notes', key='input_notes')
         with dfColumns[6]:
-            st.text_input('Name', key='input_name', value='JM')
+            st.text_input('User', key='input_name', value='JM')
 
         st.form_submit_button(on_click=add_dfForm)
 

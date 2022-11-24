@@ -6,7 +6,11 @@ import gspread_dataframe as gd
 def google_sheet_auth(sheet_url: str,
                       sheet_name: str,
                       credentials: dict):
-    """ Func to authenticate connection"""
+    ''' Func to authenticate connection
+    :param credentials: google sheet credentials from service_account.json
+    :param sheet_url: str
+    :param sheet_name: str
+    '''
     gc = gs.service_account_from_dict(credentials)
 
     # open from url
