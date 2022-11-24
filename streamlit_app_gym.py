@@ -131,9 +131,6 @@ else:
     st.error('Error: End date must fall after start date.')
 
 # filter inputs
-user_list = lifts_df['User'].drop_duplicates().to_list()
-user_choice = st.sidebar.selectbox('Select your user:', user_list)
-
 lifts_filt_df = lifts_df.loc[lifts_df["User"] == user_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Exercise"] == make_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
