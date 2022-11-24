@@ -74,7 +74,7 @@ if check_password():
 
     dfForm = st.form(key='dfForm')
     with dfForm:
-        dfColumns = st.columns(4)
+        dfColumns = st.columns(6)
         with dfColumns[0]:
             st.date_input('Day', key='input_date')
         with dfColumns[1]:
