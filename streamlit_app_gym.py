@@ -119,7 +119,7 @@ make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT',
 
 # user data input
 user_list = lifts_df['User'].drop_duplicates().to_list()
-user_choice = st.sidebar.selectbox('Select your user:', user_list)
+user_choice = st.sidebar.selectbox('Select lifter:', user_list)
 
 today = datetime.date.today()
 tomorrow = today + datetime.timedelta(days=1)
@@ -145,13 +145,13 @@ fig.update_traces(marker=dict(size=10))
 st.write(fig)
 
 # Looking at PBs
-st.write('Gym PBs')
+st.write('All time user Gym PBs')
 pb_df = lifts_df[lifts_df["Exercise"].isin(['BENCH PRESS', 'SQUAT', 'DEADLIFT'])]
 pb_df['Weight'] = pb_df['Weight'].astype(float)
-pb_df = pb_df.sort_values(by=['Exercise', 'Weight', 'Day'], ascending=[False, False,True]).drop_duplicates(['Exercise'])
+pb_df = pb_df.sort_values(by=['User','Exercise', 'Weight', 'Day'], ascending=[False, False, False,True]).drop_duplicates(['User', 'Exercise'])
 
 # formatting for graph
 pb_df['Reps'] = pb_df['Reps'].astype(str)
-fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="Reps",
+fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="User",
              barmode="group", title="All Time PB - Varying Reps ")
 st.write(fig)
