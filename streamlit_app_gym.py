@@ -8,63 +8,98 @@ import datetime
 import plotly.express as px
 import plotly.figure_factory as ff
 
+################################ Functions ###############################
 
 def add_dfForm():
-    """
-    :rtype: object
-    """
+    """ Sets keys to add pd dataframe to session state data"""
     row = pd.DataFrame({'Day': [st.session_state.input_date],
                         'Exercise': [st.session_state.input_exercise],
                         'Weight': [st.session_state.input_weight],
                         'Reps': [st.session_state.input_reps],
-                        'Sets': [st.session_state.input_sets]})
+                        'Sets': [st.session_state.input_sets],
+                        'Notes': [st.session_state.input_notes],
+                        'Name': [st.session_state.input_name]
+                        })
     st.session_state.data = pd.concat([st.session_state.data, row])
 
+
+def check_password():
+    """Returns `True` if the user had the correct password."""
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state["password"] == st.secrets["PASSWORD"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # don't store password
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # First run, show input for password.
+        st.text_input(
+            "Need Password to input data", type="password", on_change=password_entered, key="password"
+        )
+        return False
+    elif not st.session_state["password_correct"]:
+        # Password not correct, show input + error.
+        st.text_input(
+            "Need Password to input data", type="password", on_change=password_entered, key="password"
+        )
+        st.error("😕 Password incorrect")
+        return False
+    else:
+        # Password correct.
+        return True
+
+############################## streamlit app #############################
 
 # using st.secrets
 sheet_url = st.secrets['SHEET_URL']
 google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 
-############################## streamlit app #############################
-
 # set streamlit app headers
 st.header('Fitness Monitoring App')
-st.write('App looks at Gym Performance and Fitbit Activity over user defined period')
+st.write('App allows user input of gym performance and visualisation of historic performance')
 
 # input new data
-st.write('Add Data to the App')
-if 'data' not in st.session_state:
-    data = pd.DataFrame({'Day': [], 'Exercise': [], 'Weight': [], 'Reps': [], 'Sets': [], 'Notes': []})
-    st.session_state.data = data
+st.subheader('Record Sets')
 
-data = st.session_state.data
+if check_password():
 
-dfForm = st.form(key='dfForm')
-with dfForm:
-    dfColumns = st.columns(4)
-    with dfColumns[0]:
-        st.date_input('Day', key='input_date')
-    with dfColumns[1]:
-        st.selectbox('Exercise', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'], key='input_exercise')
-    with dfColumns[2]:
-        st.number_input('Weight', key='input_weight', min_value=1, max_value=200, value=100, step=1)
-    with dfColumns[3]:
-        st.number_input('Reps', key='input_reps',min_value=1, max_value=20, value=8, step=1)
-    with dfColumns[3]:
-        st.number_input('Sets', key='input_sets',min_value=1, max_value=5, value=3, step=1)
-    with dfColumns[3]:
-        st.text_input('Notes', key='input_notes')
-    st.form_submit_button(on_click=add_dfForm)
+    if 'data' not in st.session_state:
+        data = pd.DataFrame({'Day': [], 'Exercise': [], 'Weight': [], 'Reps': [], 'Sets': [], 'Notes': [], 'Name': []})
+        st.session_state.data = data
 
-# send data back to Google Sheets for storage
-export_to_google_sheets(sheet_url=sheet_url, df_new=data, credentials=google_sheet_cred_dict, sheet_name='Lifts')
+    data = st.session_state.data
+
+    dfForm = st.form(key='dfForm')
+    with dfForm:
+        dfColumns = st.columns(4)
+        with dfColumns[0]:
+            st.date_input('Day', key='input_date')
+        with dfColumns[1]:
+            st.selectbox('Exercise', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'], key='input_exercise')
+        with dfColumns[2]:
+            st.number_input('Weight', key='input_weight', min_value=1, max_value=200, value=100, step=1)
+        with dfColumns[3]:
+            st.number_input('Reps', key='input_reps',min_value=1, max_value=20, value=8, step=1)
+        with dfColumns[4]:
+            st.number_input('Sets', key='input_sets',min_value=1, max_value=5, value=3, step=1)
+        with dfColumns[5]:
+            st.text_input('Notes', key='input_notes')
+        with dfColumns[6]:
+            st.text_input('Name', key='input_name', value='JM')
+
+        st.form_submit_button(on_click=add_dfForm)
+
+    # send data back to Google Sheets for storage
+    export_to_google_sheets(sheet_url=sheet_url, df_new=data, credentials=google_sheet_cred_dict, sheet_name='Lifts')
 
 ################### historical lifts from google sheets ##################
 # data soon to read directly from SQL
 
 # set headers
 st.subheader('Gym Strength Data')
-st.write('Gym History Table')
 
 # get data using gspread
 lifts_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Lifts')
@@ -81,9 +116,11 @@ lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y').dt.date
 # exercise_list_master = lifts_df['Exercise'].drop_duplicates()
 # was sidebar input but now just normal
 make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
-#st.write('You selected:', make_choice)
 
-# user date input
+# user data input
+user_list = lifts_df['User'].drop_duplicates().to_list()
+user_choice = st.sidebar.selectbox('Select your user:', user_list)
+
 today = datetime.date.today()
 tomorrow = today + datetime.timedelta(days=1)
 start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
@@ -94,7 +131,11 @@ else:
     st.error('Error: End date must fall after start date.')
 
 # filter inputs
-lifts_filt_df = lifts_df.loc[lifts_df["Exercise"] == make_choice]
+user_list = lifts_df['User'].drop_duplicates().to_list()
+user_choice = st.sidebar.selectbox('Select your user:', user_list)
+
+lifts_filt_df = lifts_df.loc[lifts_df["User"] == user_choice]
+lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Exercise"] == make_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
 
