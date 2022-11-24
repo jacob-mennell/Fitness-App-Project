@@ -59,7 +59,7 @@ google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 
 # set streamlit app headers
 st.header('Fitness Monitoring App')
-st.write('App allows user input of gym performance and visualisation of historic performance')
+st.write('App allows user input of gym performance and visualisation of historic performance.')
 
 # input new data
 st.subheader('Record Sets')
@@ -99,7 +99,7 @@ if check_password():
 # data soon to read directly from SQL
 
 # set headers
-st.subheader('Gym Strength Data')
+st.subheader('Performance Tracking')
 
 # get data using gspread
 lifts_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Lifts')
