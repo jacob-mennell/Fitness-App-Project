@@ -8,7 +8,8 @@ import datetime
 import plotly.express as px
 import plotly.figure_factory as ff
 
-################################ Functions ###############################
+
+####################### Streamlit Specific  Functions #######################
 
 def add_dfForm():
     """ Sets keys to add pd dataframe to session state data"""
@@ -51,6 +52,7 @@ def check_password():
         # Password correct.
         return True
 
+
 ############################## streamlit app #############################
 
 # using st.secrets
@@ -74,7 +76,7 @@ if check_password():
 
     dfForm = st.form(key='dfForm')
     with dfForm:
-        dfColumns = st.columns(6)
+        dfColumns = st.columns(7)
         with dfColumns[0]:
             st.date_input('Day', key='input_date')
         with dfColumns[1]:
@@ -82,9 +84,9 @@ if check_password():
         with dfColumns[2]:
             st.number_input('Weight', key='input_weight', min_value=1, max_value=200, value=100, step=1)
         with dfColumns[3]:
-            st.number_input('Reps', key='input_reps',min_value=1, max_value=20, value=8, step=1)
+            st.number_input('Reps', key='input_reps', min_value=1, max_value=20, value=8, step=1)
         with dfColumns[4]:
-            st.number_input('Sets', key='input_sets',min_value=1, max_value=5, value=3, step=1)
+            st.number_input('Sets', key='input_sets', min_value=1, max_value=5, value=3, step=1)
         with dfColumns[5]:
             st.text_input('Notes', key='input_notes')
         with dfColumns[6]:
@@ -137,15 +139,18 @@ lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
 
 # create and write graph
-fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps',markers=True, title=f'Powerlifting Performance: {make_choice}')
+fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps', markers=True,
+              title=f'Powerlifting Performance: {make_choice}')
 fig.update_traces(marker=dict(size=10))
 st.write(fig)
 
 # Looking at PBs
-st.write('All time user Gym PBs')
+# set headers
+st.subheader('User PB Comparison')
 pb_df = lifts_df[lifts_df["Exercise"].isin(['BENCH PRESS', 'SQUAT', 'DEADLIFT'])]
 pb_df['Weight'] = pb_df['Weight'].astype(float)
-pb_df = pb_df.sort_values(by=['User','Exercise', 'Weight', 'Day'], ascending=[False, False, False,True]).drop_duplicates(['User', 'Exercise'])
+pb_df = pb_df.sort_values(by=['User', 'Exercise', 'Weight', 'Day'],
+                          ascending=[False, False, False, True]).drop_duplicates(['User', 'Exercise'])
 
 # formatting for graph
 pb_df['Reps'] = pb_df['Reps'].astype(str)
