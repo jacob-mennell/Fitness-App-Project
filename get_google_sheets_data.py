@@ -16,10 +16,7 @@ def google_sheet_auth(sheet_url: str,
     # open from url
     sh = gc.open_by_url(sheet_url)
 
-    # select workbook
-    sheet = sh.worksheet(sheet_name)
-
-    return sheet
+    return sh.worksheet(sheet_name)
 
 
 def get_google_sheet(sheet_url: str,
@@ -37,10 +34,7 @@ def get_google_sheet(sheet_url: str,
     # create Data Frame
     df = pd.DataFrame(sheet.get_all_records())
 
-    # enforce case
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
-
-    return df
+    return df.applymap(lambda s: s.upper() if type(s) == str else s)
 
 
 def export_to_google_sheets(sheet_url: str,

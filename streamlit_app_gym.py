@@ -9,7 +9,7 @@ import plotly.express as px
 import plotly.figure_factory as ff
 
 
-####################### Streamlit Specific  Functions #######################
+######################## Streamlit Specific  Functions ########################
 
 def add_dfForm():
     """ Sets keys to add pd dataframe to session state data"""
