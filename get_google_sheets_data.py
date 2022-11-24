@@ -3,6 +3,21 @@ import gspread as gs
 import gspread_dataframe as gd
 
 
+def google_sheet_auth(sheet_url: str,
+                      sheet_name: str,
+                      credentials: dict):
+    """ Func to authenticate connection"""
+    gc = gs.service_account_from_dict(credentials)
+
+    # open from url
+    sh = gc.open_by_url(sheet_url)
+
+    # select workbook
+    sheet = sh.worksheet(sheet_name)
+
+    return sheet
+
+
 def get_google_sheet(sheet_url: str,
                      sheet_name: str,
                      credentials: dict) -> pd.DataFrame:
@@ -12,16 +27,8 @@ def get_google_sheet(sheet_url: str,
     :param sheet_name: str
     :return: data frame
     '''
-    # sheet_url = os.getenv('sheet_url')
-
-    # authenticate
-    gc = gs.service_account_from_dict(credentials)
-
-    # open from url
-    sh = gc.open_by_url(sheet_url)
-
     # select workbook
-    sheet = sh.worksheet(sheet_name)
+    sheet = google_sheet_auth(sheet_url, sheet_name, credentials)
 
     # create Data Frame
     df = pd.DataFrame(sheet.get_all_records())
@@ -42,20 +49,14 @@ def export_to_google_sheets(sheet_url: str,
     :param df_new: pd.DataFrame
     :param credentials: google sheet credentials from service_account.jso
     """
-    # authenticate
-    gc = gs.service_account_from_dict(credentials)
-
-    # open from url
-    sh = gc.open_by_url(sheet_url)
-
     # select workbook
-    sheet = sh.worksheet(sheet_name)
+    sheet = google_sheet_auth(sheet_url, sheet_name, credentials)
 
     # add rows from df
     df_current = get_google_sheet(sheet_url, sheet_name, credentials)
 
     # concat new data with existing
-    final_df = pd.concat([df_current, df_new], join="inner")
+    final_df = pd.concat([df_current, df_new], join="outer")
 
     # clear data
     sheet.clear()
