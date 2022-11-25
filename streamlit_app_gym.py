@@ -131,7 +131,7 @@ user_choice = st.selectbox('Select lifter:', user_list)
 
 # dates
 today_date = datetime.date.today()
-previous_date = today - datetime.timedelta(days=60)
+previous_date = today_date - datetime.timedelta(days=60)
 date_format = 'MMM DD, YYYY'
 slider = st.slider('Select date', min_value=previous_date, value=today_date, max_value=today_date, format=date_format)
 
