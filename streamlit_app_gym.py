@@ -130,9 +130,10 @@ user_list = lifts_df['User'].drop_duplicates().to_list()
 user_choice = st.selectbox('Select lifter:', user_list)
 
 # dates
-today = datetime.date.today()
+today_date = datetime.date.today()
 previous_date = today - datetime.timedelta(days=60)
-slider = st.slider('Select date', min_value=previous_date, value=today, max_value=today, format=format)
+date_format = 'MMM DD, YYYY'
+slider = st.slider('Select date', min_value=previous_date, value=today_date, max_value=today_date, format=date_format)
 
 # start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
 # end_date = st.date_input('End date', tomorrow)
