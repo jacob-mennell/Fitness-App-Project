@@ -152,6 +152,37 @@ lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= today_date]
 fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps', markers=True,
               title=f'Powerlifting Performance: {make_choice}')
 fig.update_traces(marker=dict(size=10))
+# Add range slider
+fig.update_layout(
+    xaxis=dict(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1,
+                     label="1m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="YTD",
+                     step="year",
+                     stepmode="todate"),
+                dict(count=1,
+                     label="1y",
+                     step="year",
+                     stepmode="backward"),
+                dict(step="all")
+            ])
+        ),
+        rangeslider=dict(
+            visible=True
+        ),
+        type="date"
+    ))
+
+
 st.plotly_chart(fig, use_container_width=True)
 
 # Looking at PBs
