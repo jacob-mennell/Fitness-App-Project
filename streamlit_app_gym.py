@@ -132,7 +132,7 @@ user_choice = st.selectbox('Select lifter:', user_list)
 # dates
 today = datetime.date.today()
 previous_date = today - datetime.timedelta(days=60)
-slider = cols1.slider('Select date', min_value=previous_date, value=today, max_value=today, format=format)
+slider = st.slider('Select date', min_value=previous_date, value=today, max_value=today, format=format)
 
 # start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
 # end_date = st.date_input('End date', tomorrow)
