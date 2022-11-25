@@ -145,8 +145,8 @@ slider = st.slider('Select date', min_value=previous_date, value=today_date, max
 # filter inputs
 lifts_filt_df = lifts_df.loc[lifts_df["User"] == user_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Exercise"] == make_choice]
-lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= start_date]
-lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
+lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= previous_date]
+lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= today_date]
 
 # create and write graph
 fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps', markers=True,
