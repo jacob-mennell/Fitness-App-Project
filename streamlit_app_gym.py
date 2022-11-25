@@ -127,16 +127,16 @@ make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT',
 
 # user data input
 user_list = lifts_df['User'].drop_duplicates().to_list()
-user_choice = st.sidebar.selectbox('Select lifter:', user_list)
+user_choice = st.selectbox('Select lifter:', user_list)
 
-today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=1)
-start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
-end_date = st.date_input('End date', tomorrow)
-if start_date < end_date:
-    st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
-else:
-    st.error('Error: End date must fall after start date.')
+slider = st.slider('Select date range', min_value=start_date, value=end_date, max_value=end_date, format=format)
+
+# start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
+# end_date = st.date_input('End date', tomorrow)
+# if start_date < end_date:
+#     st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
+# else:
+#     st.error('Error: End date must fall after start date.')
 
 # filter inputs
 lifts_filt_df = lifts_df.loc[lifts_df["User"] == user_choice]
