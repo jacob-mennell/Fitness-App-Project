@@ -133,7 +133,7 @@ user_choice = st.selectbox('Select lifter:', user_list)
 today_date = datetime.date.today()
 previous_date = today_date - datetime.timedelta(days=60)
 date_format = 'MMM DD, YYYY'
-slider = st.slider('Select date', min_value=previous_date, value=today_date, max_value=today_date, format=date_format)
+prev_slider = st.slider('Select date', min_value=previous_date, value=previous_date, max_value=today_date, format=date_format)
 
 # start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
 # end_date = st.date_input('End date', tomorrow)
@@ -145,7 +145,7 @@ slider = st.slider('Select date', min_value=previous_date, value=today_date, max
 # filter inputs
 lifts_filt_df = lifts_df.loc[lifts_df["User"] == user_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Exercise"] == make_choice]
-lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= previous_date]
+lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= prev_slider]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= today_date]
 
 # create and write graph
@@ -158,21 +158,17 @@ fig.update_layout(
         rangeselector=dict(
             buttons=list([
                 dict(count=1,
+                     label="1w",
+                     step="week",
+                     stepmode="backward"),
+                dict(count=1,
                      label="1m",
                      step="month",
                      stepmode="backward"),
-                dict(count=6,
-                     label="6m",
+                dict(count=1,
+                     label="3m",
                      step="month",
-                     stepmode="backward"),
-                dict(count=1,
-                     label="YTD",
-                     step="year",
                      stepmode="todate"),
-                dict(count=1,
-                     label="1y",
-                     step="year",
-                     stepmode="backward"),
                 dict(step="all")
             ])
         ),
