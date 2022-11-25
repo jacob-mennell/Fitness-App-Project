@@ -148,7 +148,7 @@ lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= end_date]
 fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps', markers=True,
               title=f'Powerlifting Performance: {make_choice}')
 fig.update_traces(marker=dict(size=10))
-st.plotlychart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
 
 # Looking at PBs
 # set headers
@@ -162,4 +162,4 @@ pb_df = pb_df.sort_values(by=['User', 'Exercise', 'Weight', 'Day'],
 pb_df['Reps'] = pb_df['Reps'].astype(str)
 fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="User",
              barmode="group", title="All Time PB - Varying Reps ")
-st.plotlychart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
