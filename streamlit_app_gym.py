@@ -153,30 +153,30 @@ fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps', markers=True,
               title=f'Powerlifting Performance: {make_choice}')
 fig.update_traces(marker=dict(size=10))
 # Add range slider
-fig.update_layout(
-    xaxis=dict(
-        rangeselector=dict(
-            buttons=list([
-                dict(count=1,
-                     label="1w",
-                     step="week",
-                     stepmode="backward"),
-                dict(count=1,
-                     label="1m",
-                     step="month",
-                     stepmode="backward"),
-                dict(count=1,
-                     label="3m",
-                     step="month",
-                     stepmode="todate"),
-                dict(step="all")
-            ])
-        ),
-        rangeslider=dict(
-            visible=True
-        ),
-        type="date"
-    ))
+# fig.update_layout(
+#     xaxis=dict(
+#         rangeselector=dict(
+#             buttons=list([
+#                 dict(count=1,
+#                      label="1w",
+#                      step="week",
+#                      stepmode="backward"),
+#                 dict(count=1,
+#                      label="1m",
+#                      step="month",
+#                      stepmode="backward"),
+#                 dict(count=1,
+#                      label="3m",
+#                      step="month",
+#                      stepmode="todate"),
+#                 dict(step="all")
+#             ])
+#         ),
+#         rangeslider=dict(
+#             visible=True
+#         ),
+#         type="date"
+#     ))
 
 
 st.plotly_chart(fig, use_container_width=True)
