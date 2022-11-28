@@ -148,7 +148,7 @@ user_choice = st.selectbox('Select lifter:', user_list)
 lifts_filt_df = lifts_df.loc[lifts_df["User"] == user_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Exercise"] == make_choice]
 
-### code for date filter using plotl filter for now ###
+### code for date filter using plotly filter for now ###
 # lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= prev_slider]
 # lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= today_date]
 
