@@ -8,7 +8,6 @@ import datetime
 import plotly.express as px
 import plotly.figure_factory as ff
 
-
 ######################## Streamlit Specific  Functions ########################
 
 def add_dfForm():
@@ -111,7 +110,6 @@ st.subheader('Performance Tracking')
 
 # get data using gspread
 lifts_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Lifts')
-pb_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='PB')
 
 # minor cleaning
 lifts_df['Weight'] = lifts_df['Weight'].astype(float)
@@ -121,20 +119,24 @@ lifts_df['Notes'] = lifts_df['Notes'].astype(str)
 lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y').dt.date
 
 # add filter for exercise
+
+### code for auto excerse list ###
 # exercise_list_master = lifts_df['Exercise'].drop_duplicates()
-# was sidebar input but now just normal
+
+# manual input for now as just 3 exercises
 make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
 
 # user data input
 user_list = lifts_df['User'].drop_duplicates().to_list()
 user_choice = st.selectbox('Select lifter:', user_list)
 
-# dates
-today_date = datetime.date.today()
-previous_date = today_date - datetime.timedelta(days=60)
-date_format = 'MMM DD, YYYY'
-prev_slider = st.slider('Select min date', min_value=previous_date, value=previous_date, max_value=today_date, format=date_format)
+###  code for streamlit date slider ###
+# today_date = datetime.date.today()
+# previous_date = today_date - datetime.timedelta(days=60)
+# date_format = 'MMM DD, YYYY'
+# prev_slider = st.slider('Select min date', min_value=previous_date, value=previous_date, max_value=today_date, format=date_format)
 
+### code for manual date input ###
 # start_date = st.date_input('Start date', (today - datetime.timedelta(days=60)))
 # end_date = st.date_input('End date', tomorrow)
 # if start_date < end_date:
@@ -145,38 +147,41 @@ prev_slider = st.slider('Select min date', min_value=previous_date, value=previo
 # filter inputs
 lifts_filt_df = lifts_df.loc[lifts_df["User"] == user_choice]
 lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Exercise"] == make_choice]
-lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= prev_slider]
-lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= today_date]
+
+### code for date filter using plotl filter for now ###
+# lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] >= prev_slider]
+# lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= today_date]
 
 # create and write graph
 fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps', markers=True,
               title=f'Powerlifting Performance: {make_choice}')
 fig.update_traces(marker=dict(size=10))
-# Add range slider
-# fig.update_layout(
-#     xaxis=dict(
-#         rangeselector=dict(
-#             buttons=list([
-#                 dict(count=1,
-#                      label="1w",
-#                      step="week",
-#                      stepmode="backward"),
-#                 dict(count=1,
-#                      label="1m",
-#                      step="month",
-#                      stepmode="backward"),
-#                 dict(count=1,
-#                      label="3m",
-#                      step="month",
-#                      stepmode="todate"),
-#                 dict(step="all")
-#             ])
-#         ),
-#         rangeslider=dict(
-#             visible=True
-#         ),
-#         type="date"
-#     ))
+
+# Add range slider to plotly figure
+fig.update_layout(
+    xaxis=dict(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=7,
+                     label="7d",
+                     step="day",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="1m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=3,
+                     label="3m",
+                     step="month",
+                     stepmode="todate"),
+                dict(step="all")
+            ])
+        ),
+        rangeslider=dict(
+            visible=True
+        ),
+        type="date"
+    ))
 
 
 st.plotly_chart(fig, use_container_width=True)
@@ -191,6 +196,11 @@ pb_df = pb_df.sort_values(by=['User', 'Exercise', 'Weight', 'Day'],
 
 # formatting for graph
 pb_df['Reps'] = pb_df['Reps'].astype(str)
-fig = px.bar(pb_df, x="Exercise", y="Weight", hover_data=['Day', 'Exercise', 'Weight', 'Reps'], color="User",
-             barmode="group", title="All Time PB - Varying Reps ")
+fig = px.bar(pb_df,
+             x="Exercise",
+             y="Weight",
+             hover_data=['Day', 'Exercise', 'Weight', 'Reps'],
+             color="User",
+             barmode="group",
+             title="All Time PB - Varying Reps ")
 st.plotly_chart(fig, use_container_width=True)
