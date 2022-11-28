@@ -85,9 +85,10 @@ st.write(fig)
 # set header
 st.subheader('General Activity Data')
 
+### code for FitBit API Analysis class ###
 #fitinst = FitbitAnalysis(client_id, client_secret)
 #activity_df = fitinst.get_x_days_activity(30)
-#activity.to_pickle('activity.pkl')
+#sleep_df = fitinst.get_x_days_sleep_agg(30)
 
 # read from pkl file as API not working in streamlit currently
 activity_df = pd.read_pickle('activity.pkl')
@@ -122,8 +123,8 @@ steps_fig = px.bar(activity_filt_df, x="Start_Date", y="Steps", color='Name', ba
 st.write(steps_fig)
 
 # sleep data
+
 # read from pkl file as API not working in streamlit currently
-#sleep_df = fitinst.get_x_days_sleep_agg(30)
 sleep_df = pd.read_pickle('sleep.pkl')
 
 # filter dates
