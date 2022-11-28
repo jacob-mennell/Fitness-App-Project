@@ -174,7 +174,7 @@ fig.update_layout(
                      label="1m",
                      step="month",
                      stepmode="backward"),
-                dict(count=3,
+                dict(count=2,
                      label="2m",
                      step="month",
                      stepmode="backward"),
