@@ -204,7 +204,7 @@ pb_df['Weight'] = pb_df['Weight'].astype(float)
 pb_df = pb_df.sort_values(by=['User', 'Exercise', 'Weight', 'Day'],
                           ascending=[False, False, False, True]).drop_duplicates(['User', 'Exercise'])
 
-# formatting for graph
+# graph formatting
 pb_df['Reps'] = pb_df['Reps'].astype(str)
 fig = px.bar(pb_df,
              x="Exercise",
