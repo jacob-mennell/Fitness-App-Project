@@ -182,17 +182,14 @@ fig.update_layout(
             ])
         ),
         rangeslider=dict(
-            visible=True
-        ),
+            visible=True),
         type="date"
-    ))
-
-# update colours
-fig.update_layout(template='plotly_dark',
-                  xaxis_rangeselector_font_color='black',
-                  xaxis_rangeselector_activecolor='red',
-                  xaxis_rangeselector_bgcolor='green',
-                 )
+    ),
+    template='plotly_dark',
+    xaxis_rangeselector_font_color='black',
+    xaxis_rangeselector_font_size=16,
+    xaxis_rangeselector_activecolor='red',
+    xaxis_rangeselector_bgcolor='green')
 
 st.plotly_chart(fig, use_container_width=True)
 
