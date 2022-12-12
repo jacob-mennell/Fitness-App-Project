@@ -210,5 +210,5 @@ fig = px.bar(pb_df,
              color="User",
              barmode="group",
              title="All Time PB - Varying Reps ")
-fig.update_yaxes(dtick=10)
+fig.update_yaxes(dtick=20)
 st.plotly_chart(fig, use_container_width=True)
