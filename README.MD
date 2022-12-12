@@ -8,9 +8,11 @@ e.g. exercises, sets, reps and weight
 
 Secondary: 
 - Combine fitbit data with recorded data from workouts e.g. exercises, sets, reps and weights (streamlit_app.py)
-- Currently fitbit data is read from a _.pkl_ file due to issues accessing the data directly in the streamlit environment.
+- Currently, fitbit data is read from a _.pkl_ file due to issues accessing the data directly in the streamlit environment.
+- Develop Streamlit web app (streamlit_app_fitbit.py) for user interface to collate fitness and lifestyle data.
+- 
 
-Link to reduced App with just Gym Data:
+Link to Gym Performance Tracker Streamlit App:
 https://jacob-mennell-fitness-app-project-streamlit-app-gym-5dp6js.streamlit.app/
 
  pipreqs: 
