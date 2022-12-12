@@ -59,7 +59,7 @@ sheet_url = st.secrets['SHEET_URL']
 google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 
 # set streamlit app headers
-st.header('Fitness Monitoring App')
+st.header('Gym Performance Tracker')
 st.write('App allows user input of gym performance and visualisation of historic performance.')
 
 # input new data
@@ -209,6 +209,6 @@ fig = px.bar(pb_df,
              hover_data=['Day', 'Exercise', 'Weight', 'Reps', 'Notes'],
              color="User",
              barmode="group",
-             title="All Time PB - Varying Reps ")
+             title="All Time PB - Hover for number of reps")
 fig.update_yaxes(dtick=20)
 st.plotly_chart(fig, use_container_width=True)
