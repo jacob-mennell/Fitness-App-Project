@@ -2,12 +2,13 @@
 
 Aims: 
 - Record and visualise lift data from workouts
-e.g. exercises, sets, reps and weight
-- Use Google Sheets as a flexible data store to write gym session data via the gspread module
+e.g. exercises, sets, reps and weight.
+- Use Google Sheets as a flexible data store to write gym session data via the gspread module.
 - Develop Streamlit web app (streamlit_app_gym.py) for user interface to input data to google cloud and to visualise lift trends.
+- All users can monitor existing users performance, however a password is required to create new users and to input data.
 
 Secondary: 
-- Combine fitbit data with recorded data from workouts e.g. exercises, sets, reps and weights (streamlit_app.py)
+- Combine fitbit data with recorded data from workouts e.g. exercises, sets, reps and weights.
 - Currently, fitbit data is read from a _.pkl_ file due to issues accessing the data directly in the streamlit environment.
 - Develop Streamlit web app (streamlit_app_fitbit.py) for user interface to collate fitness and lifestyle data.
 
