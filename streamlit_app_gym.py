@@ -8,6 +8,7 @@ import datetime
 import plotly.express as px
 import plotly.figure_factory as ff
 
+
 ######################## Streamlit Specific  Functions ########################
 
 def add_dfForm():
@@ -60,10 +61,23 @@ google_sheet_cred_dict = st.secrets['GOOGLE_SHEET_CRED']
 
 # set streamlit app headers
 st.header('Gym Performance Tracker')
-st.write('App allows user input of gym performance and visualisation of historic performance.')
+st.write('Input user gym performance and visualise historic performance.')
+
+# programme background
+st.write('Rationale: Programme consists of a strong foundation of compound lifts with'
+         ' a smaller amount of isolated exercises with added '
+         'drop sets to increase overall volume. ')
+
+st.write('Stick to one number of reps on each exercise and try to reduce '
+         'the RPE to at least 5-7 before increasing load.')
 
 # input new data
 st.subheader('Record Sets')
+
+# get data using gspread
+lifts_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Lifts')
+exercises_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Exercises')
+exercise_list_master = exercises_df['Exercise'].drop_duplicates().to_list()
 
 if check_password():
 
@@ -85,9 +99,9 @@ if check_password():
         with dfColumns[0]:
             st.date_input('Day', key='input_date')
         with dfColumns[1]:
-            st.selectbox('Exercise', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'], key='input_exercise')
+            st.selectbox('Exercise', exercise_list, key='input_exercise')
         with dfColumns[2]:
-            st.number_input('Weight', key='input_weight', min_value=1, max_value=200, value=100, step=1)
+            st.number_input('Weight', key='input_weight', min_value=1, max_value=250, value=100, step=1)
         with dfColumns[3]:
             st.number_input('Reps', key='input_reps', min_value=1, max_value=20, value=8, step=1)
         with dfColumns[4]:
@@ -108,9 +122,6 @@ if check_password():
 # set headers
 st.subheader('Performance Tracking')
 
-# get data using gspread
-lifts_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Lifts')
-
 # minor cleaning
 lifts_df['Weight'] = lifts_df['Weight'].astype(float)
 lifts_df['Reps'] = lifts_df['Reps'].astype(str)
@@ -120,11 +131,17 @@ lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y').dt.date
 
 # add filter for exercise
 
-### code for auto excerse list ###
-# exercise_list_master = lifts_df['Exercise'].drop_duplicates()
-
 # manual input for now as just 3 exercises
-make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
+# make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
+
+# select work out day
+session_list = exercises_df['Day'].drop_duplicates().to_list()
+user_choice = st.selectbox('Select session:', session_list)
+exercises_df = exercises_df.loc[exercises_df["Day"] == user_choice]
+
+# select exercise
+exercise_list = exercises_df['Exercise'].drop_duplicates().to_list()
+make_choice = st.selectbox('Select your Gym Exercise:', exercise_list)
 
 # user data input
 user_list = lifts_df['User'].drop_duplicates().to_list()
@@ -153,7 +170,12 @@ lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Exercise"] == make_choice]
 # lifts_filt_df = lifts_filt_df.loc[lifts_filt_df["Day"] <= today_date]
 
 # create and write graph
-fig = px.line(lifts_filt_df, x="Day", y="Weight", color='Reps', markers=True,
+fig = px.line(lifts_filt_df,
+              x="Day",
+              y="Weight",
+              color='Reps',
+              markers=True,
+              hover_data=['Weight', 'Notes'],
               title=f'Powerlifting Performance: {make_choice}')
 fig.update_traces(marker=dict(size=10))
 
@@ -196,12 +218,21 @@ st.plotly_chart(fig, use_container_width=True)
 # Looking at PBs
 # set headers
 st.subheader('User PB Comparison')
-pb_df = lifts_df[lifts_df["Exercise"].isin(['BENCH PRESS', 'SQUAT', 'DEADLIFT'])]
+
+# optional choice for additional PB excessive
+pb_list = st.multiselect(
+    'Exercises to add to PB visual',
+    exercise_list_master, default=['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
+
+# filter to excersises
+pb_df = lifts_df[lifts_df["Exercise"].isin(pb_list)]
+
+# formatting
 pb_df['Weight'] = pb_df['Weight'].astype(float)
 pb_df = pb_df.sort_values(by=['User', 'Exercise', 'Weight', 'Day'],
                           ascending=[False, False, False, True]).drop_duplicates(['User', 'Exercise'])
 
-# graph formatting
+# graph
 pb_df['Reps'] = pb_df['Reps'].astype(str)
 fig = px.bar(pb_df,
              x="Exercise",
