@@ -79,6 +79,34 @@ lifts_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_d
 exercises_df = get_google_sheet(sheet_url=sheet_url, credentials=google_sheet_cred_dict, sheet_name='Exercises')
 exercise_list_master = exercises_df['Exercise'].drop_duplicates().to_list()
 
+# set headers
+st.subheader('Performance Tracking')
+
+# minor cleaning
+lifts_df['Weight'] = lifts_df['Weight'].astype(float)
+lifts_df['Reps'] = lifts_df['Reps'].astype(str)
+lifts_df['Sets'] = lifts_df['Sets'].astype(int)
+lifts_df['Notes'] = lifts_df['Notes'].astype(str)
+lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y').dt.date
+
+# add filter for exercise
+
+# manual input for now as just 3 exercises
+# make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
+
+# select work out day
+session_list = exercises_df['Day'].drop_duplicates().to_list()
+user_choice = st.selectbox('Select session:', session_list)
+exercises_df = exercises_df.loc[exercises_df["Day"] == user_choice]
+
+# select exercise
+exercise_list = exercises_df['Exercise'].drop_duplicates().to_list()
+make_choice = st.selectbox('Select your Gym Exercise:', exercise_list)
+
+# user data input
+user_list = lifts_df['User'].drop_duplicates().to_list()
+user_choice = st.selectbox('Select lifter:', user_list)
+
 if check_password():
 
     if 'data' not in st.session_state:
@@ -115,37 +143,6 @@ if check_password():
 
     # send data back to Google Sheets for storage
     export_to_google_sheets(sheet_url=sheet_url, df_new=data, credentials=google_sheet_cred_dict, sheet_name='Lifts')
-
-################### historical lifts from google sheets ##################
-# data soon to read directly from SQL
-
-# set headers
-st.subheader('Performance Tracking')
-
-# minor cleaning
-lifts_df['Weight'] = lifts_df['Weight'].astype(float)
-lifts_df['Reps'] = lifts_df['Reps'].astype(str)
-lifts_df['Sets'] = lifts_df['Sets'].astype(int)
-lifts_df['Notes'] = lifts_df['Notes'].astype(str)
-lifts_df['Day'] = pd.to_datetime(lifts_df['Day'], format='%d/%m/%Y').dt.date
-
-# add filter for exercise
-
-# manual input for now as just 3 exercises
-# make_choice = st.selectbox('Select your Gym Exercise:', ['BENCH PRESS', 'SQUAT', 'DEADLIFT'])
-
-# select work out day
-session_list = exercises_df['Day'].drop_duplicates().to_list()
-user_choice = st.selectbox('Select session:', session_list)
-exercises_df = exercises_df.loc[exercises_df["Day"] == user_choice]
-
-# select exercise
-exercise_list = exercises_df['Exercise'].drop_duplicates().to_list()
-make_choice = st.selectbox('Select your Gym Exercise:', exercise_list)
-
-# user data input
-user_list = lifts_df['User'].drop_duplicates().to_list()
-user_choice = st.selectbox('Select lifter:', user_list)
 
 ###  code for streamlit date slider ###
 # today_date = datetime.date.today()
